@@ -1,4 +1,4 @@
-<h1 align='center'><img src='https://github.com/ezier-project/template/blob/master/images/template.svg' alt='Ezier Template logo'>
+<h1 align='center'><img src='https://github.com/ezier-project/validate/blob/master/images/validate.svg' alt='Ezier Template logo'>
 
 [package-name]</h1>
 
