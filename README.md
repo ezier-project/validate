@@ -40,8 +40,10 @@ const stringResult = validateString('some string', {
 **Getting error info:**
 
 ```ts
-if (stringResult) {
-    console.log(`[Code ${stringResult.code}]: ${stringResult.message}`);
+for (const errorObjectIndex in stringResult) {
+    const errorObject: EzierValidatorError = stringResult[Number(errorObjectIndex)];
+
+    console.log(`[${errorObjectIndex}] [${errorObject.name}]: ${errorObject.message}`);
 }
 ```
 
