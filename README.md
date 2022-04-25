@@ -31,10 +31,18 @@ npm i @ezier/validate
 ```ts
 import { validateString } from '@ezier/validate';
 
-const stringValidation = validateString('some string', {
+const stringResult = validateString('some string', {
     minLength: 5,
     maxLength: 20
 });
+```
+
+**Getting error info:**
+
+```ts
+if (stringResult) {
+    console.log(`[Code ${stringResult?.code}]: ${stringResult?.message}`);
+}
 ```
 
 <i>Made by [Shadofer](https://github.com/shadofer) with joy.</i>
