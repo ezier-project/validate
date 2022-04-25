@@ -41,7 +41,7 @@ const stringResult = validateString('some string', {
 
 ```ts
 if (stringResult) {
-    console.log(`[Code ${stringResult?.code}]: ${stringResult?.message}`);
+    console.log(`[Code ${stringResult.code}]: ${stringResult.message}`);
 }
 ```
 
