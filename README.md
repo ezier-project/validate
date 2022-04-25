@@ -1,36 +1,40 @@
-<h1 align='center'><img src='https://github.com/ezier-project/validate/blob/master/images/validate.svg' alt='Ezier Template logo'>
+<h1 align='center'><img src='https://raw.githubusercontent.com/ezier-project/validate/master/images/validate.svg' alt='Ezier Validator logo'>
 
-[package-name]</h1>
+Ezier Validator</h1>
 
-<h2 align='center'>The template for Ezier packages.</h2>
+<h2 align='center'>An ezier validator for nodejs.</h2>
 
 <h2 align='center'>
 
-![npm bundle size](https://img.shields.io/bundlephobia/min/[package-name]?style=for-the-badge) ![npm](https://img.shields.io/npm/dm/[package-name]?style=for-the-badge) ![NPM](https://img.shields.io/npm/l/[package-name]?style=for-the-badge) ![npm](https://img.shields.io/npm/v/[package-name]?style=for-the-badge)
+![npm bundle size](https://img.shields.io/bundlephobia/min/@ezier/validate?style=for-the-badge) ![npm](https://img.shields.io/npm/dm/@ezier/validate?style=for-the-badge) ![NPM](https://img.shields.io/npm/l/@ezier/validate?style=for-the-badge) ![npm](https://img.shields.io/npm/v/@ezier/validate?style=for-the-badge)
 
 # Why?
 
-Explain why this was created
+**This validator allows you to validate your objects with eze.
+Nothing more, nothing less.**
+
+***Also used in the Fronvo [server](https://github.com/Fronvo/fronvo)***
 
 # Installing
 
 ```
-npm i [package-name]
+npm i @ezier/validate
 ```
 
 # Documentation
-**Documentation for the [package-name] can be found at https://ezier-project.github.io/[package-name]/.**
+**Documentation for the Ezier Validator can be found at https://ezier-project.github.io/validate/.**
 
 # Examples
 
-**Setup an instance of `[package-name]`:**
+**Validate a string's length:**
 
 ```ts
-import { format } from 'util';
+import { validateString } from '@ezier/validate';
 
-const errorToFormat = '%s forget to %s this out!';
-
-console.log(format(errorToFormat, 'Don\'t', 'fill'));
+const stringValidation = validateString('some string', {
+    minLength: 5,
+    maxLength: 20
+});
 ```
 
-<i>Made by [[author]](https://github.com/[author]) with joy.</i>
+<i>Made by [Shadofer](https://github.com/shadofer) with joy.</i>
