@@ -32,7 +32,7 @@ const EzierValidatorErrorTemplates: {
 export interface EzierValidatorError {
     message: string;
     code: number;
-    name: string;
+    name: EzierValidatorErrors;
     extras?: EzierValidatorExtras;
 }
 
