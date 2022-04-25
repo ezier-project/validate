@@ -55,7 +55,7 @@ function generateError(
 export function validateString(
     value: string,
     schema: EzierValidatorStringSchema
-): undefined | EzierValidatorError {
+): EzierValidatorError[] {
     if (!value) {
         throw new Error('No value provided.');
     }
@@ -64,39 +64,47 @@ export function validateString(
         throw new Error('No schema provided.');
     }
 
+    const errorsList: EzierValidatorError[] = [];
+
     if (schema.length && value.length != schema.length) {
-        return generateError(
-            'STRING_INVALID_LENGTH',
-            ['Value', schema.length],
-            {
+        errorsList.push(
+            generateError('STRING_INVALID_LENGTH', ['Value', schema.length], {
                 length: schema.length,
-            }
+            })
         );
     }
 
     if (schema.minLength && value.length < schema.minLength) {
-        return generateError(
-            'STRING_INVALID_MIN_LENGTH',
-            ['Value', schema.minLength],
-            {
-                minLength: schema.minLength,
-            }
+        errorsList.push(
+            generateError(
+                'STRING_INVALID_MIN_LENGTH',
+                ['Value', schema.minLength],
+                {
+                    minLength: schema.minLength,
+                }
+            )
         );
     }
 
     if (schema.maxLength && value.length > schema.maxLength) {
-        return generateError(
-            'STRING_INVALID_MAX_LENGTH',
-            ['Value', schema.maxLength],
-            {
-                maxLength: schema.maxLength,
-            }
+        errorsList.push(
+            generateError(
+                'STRING_INVALID_MAX_LENGTH',
+                ['Value', schema.maxLength],
+                {
+                    maxLength: schema.maxLength,
+                }
+            )
         );
     }
 
     if (schema.regex && !value.match(schema.regex)) {
-        return generateError('STRING_INVALID_REGEX', ['Value'], {
-            regex: schema.regex,
-        });
+        errorsList.push(
+            generateError('STRING_INVALID_REGEX', ['Value'], {
+                regex: schema.regex,
+            })
+        );
     }
+
+    return errorsList;
 }
