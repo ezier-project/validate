@@ -4,12 +4,12 @@ import { v4 } from 'uuid';
 let hasErrored = false;
 
 function checkError(
-    result: undefined | EzierValidatorError,
+    result: EzierValidatorError[],
     done: Mocha.Done
 ): void {
-    if (result) {
+    if (result[0]) {
         hasErrored = true;
-        done(result.message);
+        done(result[0].message);
     }
 }
 
