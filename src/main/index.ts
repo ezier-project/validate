@@ -32,6 +32,7 @@ const EzierValidatorErrorTemplates: {
 export interface EzierValidatorError {
     message: string;
     code: number;
+    name: string;
     extras?: EzierValidatorExtras;
 }
 
@@ -46,6 +47,7 @@ function generateError(
             ? format(EzierValidatorErrorTemplates[errorName], ...formatArgs)
             : EzierValidatorErrorTemplates[errorName],
         code: Object.keys(EzierValidatorErrorTemplates).indexOf(errorName) + 1,
+        name: errorName,
         extras,
     };
 }
