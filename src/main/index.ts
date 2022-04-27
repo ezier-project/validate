@@ -8,11 +8,22 @@ export interface EzierValidatorSchema {
     optional?: boolean;
 }
 
+// Strings
+type EzierValidatorStringType = 'email';
+
+const EzierValidatorStringTypeRegex: {
+    [Type in EzierValidatorStringType]: RegExp;
+} = {
+    // https://ihateregex.io/expr/email
+    email: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
+};
+
 export interface EzierValidatorStringSchema extends EzierValidatorSchema {
     length?: number;
     minLength?: number;
     maxLength?: number;
     regex?: RegExp;
+    type?: EzierValidatorStringType;
 }
 
 // Errors
@@ -25,7 +36,8 @@ export type EzierValidatorErrors =
     | 'STRING_INVALID_LENGTH'
     | 'STRING_INVALID_MIN_LENGTH'
     | 'STRING_INVALID_MAX_LENGTH'
-    | 'STRING_INVALID_REGEX';
+    | 'STRING_INVALID_REGEX'
+    | 'STRING_INVALID_TYPE';
 
 const EzierValidatorErrorTemplates: {
     [Error in EzierValidatorErrors]: string;
@@ -37,6 +49,7 @@ const EzierValidatorErrorTemplates: {
     STRING_INVALID_MAX_LENGTH:
         "Key '%s' must contain a maximum of %i characters.",
     STRING_INVALID_REGEX: "Key '%s' doesn't match the required regex pattern.",
+    STRING_INVALID_TYPE: "Key '%s' was expected to be of type %s.",
 };
 
 export interface EzierValidatorError {
@@ -110,6 +123,13 @@ export class StringSchema {
                 throw new Error(
                     `Schema for key \'${schemaKey}\' has a higher minLength than maxLength (${schemaValue.minLength} > ${schemaValue.maxLength})`
                 );
+            }
+
+            if (
+                schemaValue.type &&
+                !EzierValidatorStringTypeRegex[schemaValue.type]
+            ) {
+                throw new Error("Unknown string 'type' value.");
             }
         }
 
@@ -204,6 +224,24 @@ function validateString(
                 key: valueKey,
             })
         );
+    }
+
+    if (schema.type) {
+        switch (schema.type) {
+            default:
+                if (!EzierValidatorStringTypeRegex[schema.type].test(value)) {
+                    errorsList.push(
+                        generateError(
+                            'STRING_INVALID_TYPE',
+                            [valueKey, schema.type],
+                            {
+                                type: schema.type,
+                                key: valueKey,
+                            }
+                        )
+                    );
+                }
+        }
     }
 
     return errorsList;
