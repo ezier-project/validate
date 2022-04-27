@@ -1,12 +1,20 @@
-import { EzierValidatorError, validateString } from '../main/index';
+import {
+    EzierValidatorError,
+    EzierValidatorStringSchema,
+    StringSchema,
+} from '../main/index';
 import { v4 } from 'uuid';
 
 let hasErrored = false;
 
-function checkError(
-    result: EzierValidatorError[],
-    done: Mocha.Done
-): void {
+function validate(
+    value: string,
+    schema: EzierValidatorStringSchema
+): EzierValidatorError[] {
+    return new StringSchema({ value: schema }).validate({ value });
+}
+
+function checkError(result: EzierValidatorError[], done: Mocha.Done): void {
     if (result[0]) {
         hasErrored = true;
         done(result[0].message);
@@ -14,35 +22,20 @@ function checkError(
 }
 
 function validateExactLength(done: Mocha.Done): void {
-    checkError(
-        validateString('astring', {
-            length: 7,
-        }),
-        done
-    );
+    checkError(validate('astring', { length: 7 }), done);
 }
 
 function validateMinLength(done: Mocha.Done): void {
-    checkError(
-        validateString('strmin', {
-            minLength: 6,
-        }),
-        done
-    );
+    checkError(validate('strmin', { minLength: 6 }), done);
 }
 
 function validateMaxLength(done: Mocha.Done): void {
-    checkError(
-        validateString('strmax', {
-            maxLength: 6,
-        }),
-        done
-    );
+    checkError(validate('strmax', { maxLength: 6 }), done);
 }
 
 function validateRegex(done: Mocha.Done): void {
     checkError(
-        validateString(v4(), {
+        validate(v4(), {
             regex: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
         }),
         done
