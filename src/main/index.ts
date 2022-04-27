@@ -123,8 +123,13 @@ export class StringSchema {
         }
 
         for (const keyValue in this.schema) {
-            if (consumedKeys.indexOf(keyValue) == -1 && !this.schema[keyValue].optional) {
-                throw new Error(`Key \'${keyValue}\' was not passed and is not optional.`);
+            if (
+                consumedKeys.indexOf(keyValue) == -1 &&
+                !this.schema[keyValue].optional
+            ) {
+                throw new Error(
+                    `Key \'${keyValue}\' was not passed and is not optional.`
+                );
             }
         }
 
