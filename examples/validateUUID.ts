@@ -3,8 +3,7 @@ import { StringSchema } from '../src/main/index';
 
 const uuidSchema = new StringSchema({
     uuid: {
-        length: 36,
-        regex: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+        type: 'uuid'
     },
 });
 
