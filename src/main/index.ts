@@ -12,9 +12,12 @@ export interface EzierValidatorStringSchema {
 }
 
 // Errors
-export interface EzierValidatorExtras extends EzierValidatorStringSchema {}
+export interface EzierValidatorExtras extends EzierValidatorStringSchema {
+    key: string;
+}
 
 export type EzierValidatorErrors =
+    | 'STRING_REQUIRED'
     | 'STRING_INVALID_LENGTH'
     | 'STRING_INVALID_MIN_LENGTH'
     | 'STRING_INVALID_MAX_LENGTH'
@@ -23,10 +26,13 @@ export type EzierValidatorErrors =
 const EzierValidatorErrorTemplates: {
     [Error in EzierValidatorErrors]: string;
 } = {
-    STRING_INVALID_LENGTH: '%s must consist of exactly %i characters.',
-    STRING_INVALID_MIN_LENGTH: '%s must contain a minimum of %i characters.',
-    STRING_INVALID_MAX_LENGTH: '%s must contain a maximum of %i characters.',
-    STRING_INVALID_REGEX: "%s doesn't match the required regex pattern.",
+    STRING_REQUIRED: "Key '%s' is required.",
+    STRING_INVALID_LENGTH: "Key '%s' must consist of exactly %i characters.",
+    STRING_INVALID_MIN_LENGTH:
+        "Key '%s' must contain a minimum of %i characters.",
+    STRING_INVALID_MAX_LENGTH:
+        "Key '%s' must contain a maximum of %i characters.",
+    STRING_INVALID_REGEX: "Key '%s' doesn't match the required regex pattern.",
 };
 
 export interface EzierValidatorError {
@@ -52,24 +58,102 @@ function generateError(
     };
 }
 
-export function validateString(
-    value: string,
+// Strings
+export class StringSchema {
+    schema!: { [key: string]: EzierValidatorStringSchema };
+
+    constructor(schema: { [key: string]: EzierValidatorStringSchema }) {
+        if (!schema || Object.keys(schema).length == 0) {
+            throw new Error('No schema provided.');
+        }
+
+        // Sanity checks
+        for (const schemaKey in schema) {
+            const schemaValue = schema[schemaKey];
+
+            if (
+                (schemaValue.length && schemaValue.length < 0) ||
+                (schemaValue.minLength && schemaValue.minLength < 0) ||
+                (schemaValue.maxLength && schemaValue.maxLength < 0)
+            ) {
+                throw new Error(
+                    `Schema for key \'${schemaKey}\' contains negative length values.`
+                );
+            }
+
+            if (
+                schemaValue.minLength &&
+                schemaValue.maxLength &&
+                schemaValue.minLength > schemaValue.maxLength
+            ) {
+                throw new Error(
+                    `Schema for key \'${schemaKey}\' has a higher minLength than maxLength (${schemaValue.minLength} > ${schemaValue.maxLength})`
+                );
+            }
+        }
+
+        this.schema = schema;
+    }
+
+    validate(values: { [key: string]: string }): EzierValidatorError[] {
+        if (!values || Object.keys(values).length == 0) {
+            throw new Error('No data provided.');
+        }
+
+        const errorsList: EzierValidatorError[] = [];
+        const consumedKeys: string[] = [];
+
+        for (const stringValueIndex in values) {
+            const stringValue = values[stringValueIndex];
+
+            if (!this.schema[stringValueIndex]) {
+                throw new Error(
+                    `Key \'${stringValueIndex}\' doesn\'t exist in the schema.`
+                );
+            }
+
+            const strDictArg: { [key: string]: string } = {};
+            strDictArg[stringValueIndex] = stringValue;
+
+            errorsList.push(
+                ...validateString(strDictArg, this.schema[stringValueIndex])
+            );
+
+            consumedKeys.push(stringValueIndex);
+        }
+
+        for (const keyValue in this.schema) {
+            if (consumedKeys.indexOf(keyValue) == -1) {
+                throw new Error(`Key \'${keyValue}\' was not passed.`);
+            }
+        }
+
+        return errorsList;
+    }
+}
+
+function validateString(
+    valueDict: { [key: string]: string },
     schema: EzierValidatorStringSchema
 ): EzierValidatorError[] {
-    if (!value) {
-        throw new Error('No value provided.');
-    }
-
-    if (!schema) {
-        throw new Error('No schema provided.');
-    }
-
     const errorsList: EzierValidatorError[] = [];
+
+    const valueKey = Object.keys(valueDict)[0];
+    const value = valueDict[valueKey];
+
+    if (!value) {
+        errorsList.push(
+            generateError('STRING_REQUIRED', [valueKey], {
+                key: valueKey,
+            })
+        );
+    }
 
     if (schema.length && value.length != schema.length) {
         errorsList.push(
-            generateError('STRING_INVALID_LENGTH', ['Value', schema.length], {
+            generateError('STRING_INVALID_LENGTH', [valueKey, schema.length], {
                 length: schema.length,
+                key: valueKey,
             })
         );
     }
@@ -78,9 +162,10 @@ export function validateString(
         errorsList.push(
             generateError(
                 'STRING_INVALID_MIN_LENGTH',
-                ['Value', schema.minLength],
+                [valueKey, schema.minLength],
                 {
                     minLength: schema.minLength,
+                    key: valueKey,
                 }
             )
         );
@@ -90,18 +175,20 @@ export function validateString(
         errorsList.push(
             generateError(
                 'STRING_INVALID_MAX_LENGTH',
-                ['Value', schema.maxLength],
+                [valueKey, schema.maxLength],
                 {
                     maxLength: schema.maxLength,
+                    key: valueKey,
                 }
             )
         );
     }
 
-    if (schema.regex && !value.match(schema.regex)) {
+    if (schema.regex && !schema.regex.test(value)) {
         errorsList.push(
-            generateError('STRING_INVALID_REGEX', ['Value'], {
+            generateError('STRING_INVALID_REGEX', [valueKey], {
                 regex: schema.regex,
+                key: valueKey,
             })
         );
     }
