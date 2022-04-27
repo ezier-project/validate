@@ -62,6 +62,23 @@ function generateError(
     };
 }
 
+// General
+function checkArgsExistance(
+    consumedKeys: string[],
+    schema: { [key: string]: EzierValidatorSchema }
+): void {
+    for (const keyValue in schema) {
+        if (
+            consumedKeys.indexOf(keyValue) == -1 &&
+            !schema[keyValue].optional
+        ) {
+            throw new Error(
+                `Key \'${keyValue}\' was not passed and is not optional.`
+            );
+        }
+    }
+}
+
 // Strings
 export class StringSchema {
     schema!: { [key: string]: EzierValidatorStringSchema };
@@ -122,16 +139,7 @@ export class StringSchema {
             consumedKeys.push(stringValueIndex);
         }
 
-        for (const keyValue in this.schema) {
-            if (
-                consumedKeys.indexOf(keyValue) == -1 &&
-                !this.schema[keyValue].optional
-            ) {
-                throw new Error(
-                    `Key \'${keyValue}\' was not passed and is not optional.`
-                );
-            }
-        }
+        checkArgsExistance(consumedKeys, this.schema);
 
         return errorsList;
     }
