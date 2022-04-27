@@ -4,7 +4,11 @@
 
 import { format } from 'util';
 
-export interface EzierValidatorStringSchema {
+export interface EzierValidatorSchema {
+    optional?: boolean;
+}
+
+export interface EzierValidatorStringSchema extends EzierValidatorSchema {
     length?: number;
     minLength?: number;
     maxLength?: number;
@@ -96,10 +100,6 @@ export class StringSchema {
     }
 
     validate(values: { [key: string]: string }): EzierValidatorError[] {
-        if (!values || Object.keys(values).length == 0) {
-            throw new Error('No data provided.');
-        }
-
         const errorsList: EzierValidatorError[] = [];
         const consumedKeys: string[] = [];
 
@@ -123,8 +123,8 @@ export class StringSchema {
         }
 
         for (const keyValue in this.schema) {
-            if (consumedKeys.indexOf(keyValue) == -1) {
-                throw new Error(`Key \'${keyValue}\' was not passed.`);
+            if (consumedKeys.indexOf(keyValue) == -1 && !this.schema[keyValue].optional) {
+                throw new Error(`Key \'${keyValue}\' was not passed and is not optional.`);
             }
         }
 
