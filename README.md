@@ -104,4 +104,6 @@ for (const errorObjectIndex in result) {
 }
 ```
 
+**More examples located [here](https://github.com/ezier-project/validate/tree/master/examples)**
+
 <i>Made by [Shadofer](https://github.com/shadofer) with joy.</i>
