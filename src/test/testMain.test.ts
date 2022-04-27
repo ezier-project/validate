@@ -42,11 +42,21 @@ function validateRegex(done: Mocha.Done): void {
     );
 }
 
+function validateType(done: Mocha.Done): void {
+    checkError(
+        validate('myemail@gmail.com', {
+            type: 'email',
+        }),
+        done
+    );
+}
+
 it('string validation', done => {
     validateExactLength(done);
     validateMinLength(done);
     validateMaxLength(done);
     validateRegex(done);
+    validateType(done);
 
     !hasErrored && done();
 });
