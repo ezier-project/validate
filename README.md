@@ -8,6 +8,8 @@ Ezier Validator</h1>
 
 ![npm bundle size](https://img.shields.io/bundlephobia/min/@ezier/validate?style=for-the-badge) ![npm](https://img.shields.io/npm/dm/@ezier/validate?style=for-the-badge) ![NPM](https://img.shields.io/npm/l/@ezier/validate?style=for-the-badge) ![npm](https://img.shields.io/npm/v/@ezier/validate?style=for-the-badge)
 
+</h2>
+
 # Why?
 
 **This validator allows you to validate your objects with eze.
