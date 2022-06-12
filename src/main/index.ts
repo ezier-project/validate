@@ -223,65 +223,68 @@ function validateString(
         );
     }
 
-    if (schema.length && value.length != schema.length) {
-        errorsList.push(
-            generateError('STRING_INVALID_LENGTH', [valueKey, schema.length], {
-                length: schema.length,
-                key: valueKey,
-            })
-        );
-    }
-
-    if (schema.minLength && value.length < schema.minLength) {
-        errorsList.push(
-            generateError(
-                'STRING_INVALID_MIN_LENGTH',
-                [valueKey, schema.minLength],
-                {
-                    minLength: schema.minLength,
+    // If it doesn't exist, skip following checks
+    else {
+        if (schema.length && value.length != schema.length) {
+            errorsList.push(
+                generateError('STRING_INVALID_LENGTH', [valueKey, schema.length], {
+                    length: schema.length,
                     key: valueKey,
-                }
-            )
-        );
-    }
+                })
+            );
+        }
 
-    if (schema.maxLength && value.length > schema.maxLength) {
-        errorsList.push(
-            generateError(
-                'STRING_INVALID_MAX_LENGTH',
-                [valueKey, schema.maxLength],
-                {
-                    maxLength: schema.maxLength,
+        if (schema.minLength && value.length < schema.minLength) {
+            errorsList.push(
+                generateError(
+                    'STRING_INVALID_MIN_LENGTH',
+                    [valueKey, schema.minLength],
+                    {
+                        minLength: schema.minLength,
+                        key: valueKey,
+                    }
+                )
+            );
+        }
+
+        if (schema.maxLength && value.length > schema.maxLength) {
+            errorsList.push(
+                generateError(
+                    'STRING_INVALID_MAX_LENGTH',
+                    [valueKey, schema.maxLength],
+                    {
+                        maxLength: schema.maxLength,
+                        key: valueKey,
+                    }
+                )
+            );
+        }
+
+        if (schema.regex && !schema.regex.test(value)) {
+            errorsList.push(
+                generateError('STRING_INVALID_REGEX', [valueKey], {
+                    regex: schema.regex,
                     key: valueKey,
-                }
-            )
-        );
-    }
+                })
+            );
+        }
 
-    if (schema.regex && !schema.regex.test(value)) {
-        errorsList.push(
-            generateError('STRING_INVALID_REGEX', [valueKey], {
-                regex: schema.regex,
-                key: valueKey,
-            })
-        );
-    }
-
-    if (schema.type) {
-        switch (schema.type) {
-            default:
-                if (!EzierValidatorStringTypeRegex[schema.type].test(value)) {
-                    errorsList.push(
-                        generateError(
-                            'STRING_INVALID_TYPE',
-                            [valueKey, schema.type],
-                            {
-                                type: schema.type,
-                                key: valueKey,
-                            }
-                        )
-                    );
-                }
+        if (schema.type) {
+            switch (schema.type) {
+                default:
+                    if (!EzierValidatorStringTypeRegex[schema.type].test(value)) {
+                        errorsList.push(
+                            generateError(
+                                'STRING_INVALID_TYPE',
+                                [valueKey, schema.type],
+                                {
+                                    type: schema.type,
+                                    key: valueKey,
+                                }
+                            )
+                        );
+                    }
+            }
         }
     }
 
